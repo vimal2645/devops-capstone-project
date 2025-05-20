@@ -36,6 +36,7 @@ jobs:
           python -m pip install --upgrade pip wheel
           pip install -r requirements.txt
 
-      - name: Run tests
+      - name: Lint with flake8
         run: |
-          nosetests --with-spec --spec-color
+          flake8 service --count --select=E9,F63,F7,F82 --show-source --statistics
+          fla

@@ -10,8 +10,16 @@ from service import config
 from service.common import log_handlers
 
 # Create Flask application
+from flask import Flask
+from flask_talisman import Talisman
+...
+
 app = Flask(__name__)
 app.config.from_object(config)
+
+# Apply security headers via Flask-Talisman
+talisman = Talisman(app)
+
 
 # Import the routes After the Flask app is created
 # pylint: disable=wrong-import-position, cyclic-import, wrong-import-order
@@ -35,3 +43,12 @@ except Exception as error:  # pylint: disable=broad-except
     sys.exit(4)
 
 app.logger.info("Service initialized!")
+
+# Add Security Headers
+@app.after_request
+def set_security_headers(response):
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Content-Security-Policy'] = "default-src 'self'; object-src 'none'"
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    return response
